@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Pokeminhos {% endblock %}</h1>
+    <form action="/" method="POST">
+        <input type="text" name="type">
+        <input type="submit" value="Submit">
+    </form>
+    <table>
+        <thead>
+            <tr>
+            {% for i in ['ID', 'Name', 'Type 1', 'Type 2', 'Total',
+                         'HP', 'Attack', 'Defense', 'Sp.Atk', 'Sp.Def',
+                         'Speed', 'Generation', 'Legendary'] %}
+                <th>{{ i }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+            {% for i in pokemon %}
+                <tr>
+                {% for j in range(pokemon[0]|length) %}
+                    <td>{{ i[j] }}</td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
