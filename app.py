@@ -1,5 +1,9 @@
-from flask import Flask, render_template, request, url_for, flash, redirect
+from flask import Flask, render_template, request
+import pandas as pd
 import sqlite3
+import plotly
+import plotly.graph_objects as go
+import json
 
 app = Flask(__name__)
 
@@ -8,17 +12,25 @@ app = Flask(__name__)
 def index():
 
     connection = sqlite3.connect('database.db')
-    cursor = connection.cursor()
+    df = pd.read_sql_query("""
+        SELECT * FROM pokemon""", con=connection)
+    connection.commit()
+    connection.close()
 
-    type = request.form.get('type')
-    cursor.execute("""
-        SELECT * FROM pokemon
-         WHERE Type1 LIKE ?
-         OR Type2 LIKE ?
-        """, (type, type))
-    pokemon = cursor.fetchall()
+    df = df.head(30)
 
-    return render_template('index.html', pokemon=pokemon)
+    fig = go.Figure(data=[go.Table(
+                            header=dict(values=list(df.columns),
+                                        fill_color='olive',
+                                        align='left'),
+                            cells=dict(values=df.transpose(),
+                                       align='left'))
+                    ])
+
+
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return render_template('index.html', graphJSON=graphJSON)
 
 
 #---
