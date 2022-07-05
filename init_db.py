@@ -16,8 +16,6 @@ conn.autocommit = True
 
 cursor = conn.cursor()
 
-sql = '''CREATE DATABASE pokemon;'''
-
 cursor.execute('''CREATE DATABASE pokemon;''')
 
 print('Ok!!')
