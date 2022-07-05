@@ -1,23 +1,25 @@
-import sqlite3
-
-#---
-#crio uma conexão com a database desejada
-connection = sqlite3.connect('database.db')
-cursor = connection.cursor()
-
-#--- 
-cursor.execute("""
-CREATE TABLE contact_details
-(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    firstname TEXT,
-    surname TEXT,
-    address TEXT
-)
-
-""")
+import psycopg2
 
 
-#---
-connection.commit()
-connection.close()
+###
+ # Executado uma vez apenas e usado para criar a database
+ # que usaremos no projeto.
+###
+
+
+conn = psycopg2.connect(database='postgres',
+                        user='***',
+                        password='***',
+                        host='localhost',
+                        port='5432')
+conn.autocommit = True
+
+cursor = conn.cursor()
+
+sql = '''CREATE DATABASE pokemon;'''
+
+cursor.execute('''CREATE DATABASE pokemon;''')
+
+print('Ok!!')
+
+conn.close()
