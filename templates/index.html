@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
     <h1>{% block title %} Pokeminhos {% endblock %}</h1>
+    {% for type in types %}
+        <input type="submit" value={{ type }} onclick="callback(value)">
+    {% endfor %}
     <div id="chart" class="chart"></div>
     <script>
         let values = {{ graphJSON | safe }};
