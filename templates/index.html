@@ -2,13 +2,26 @@
 
 {% block content %}
 
-    <h1>{% block title %} Pokeminhos {% endblock %}</h1>
-    {% for type in types %}
-        <input type="submit" value={{ type }} onclick="callback(value)">
-    {% endfor %}
-    <div id="chart" class="chart"></div>
+ <!--   <h1>{% block title %} Pokeminhos {% endblock %}</h1> -->
+
+    <div class="bttn">
+        {% for type in types %}
+            <input class="btn btn-success" type="submit" value={{ type }} onclick="callback(value)">
+        {% endfor %}
+        <div id="table"></div>
+    </div>
+
+    <div class="graphs">
+        <div id="boxplot"></div>
+        <div id="barchart"></div>
+    </div>
+
+
     <script>
-        let values = {{ graphJSON | safe }};
-        Plotly.newPlot('chart', values)
+        let data = {{ graphJSON | safe }};
+        Plotly.newPlot('barchart', data[0]);
+        Plotly.newPlot('boxplot', data[1]);
+        Plotly.newPlot('table', data[2]);
     </script>
+
 {% endblock %}

@@ -27,7 +27,7 @@ def index():
     types.remove('None')
     types.sort()
 
-    return render_template('index.html', types=types)
+    return render_template('index.html', types=types, graphJSON=get_graph())
 
 
 @app.route('/callback')
@@ -54,18 +54,55 @@ def get_graph(type='grass'):
     conn.close()
     cursor.close
 
-    fig = go.Figure(data=[go.Table(
-                            header=dict(values=list(df.columns),
-                                        fill_color='olive',
+    #---
+
+    df_filter = df.loc[(df['type1'] == f'{type}') | (df['type2'] == f'{type}'), :]
+
+    df_bar = df_filter
+    df_bar.loc[df_bar['type2'].isnull(), 'type2'] = df_bar['type1']
+    df_bar = df_bar.groupby(['type1', 'type2']).nunique()['id'].reset_index()
+    df_bar.loc[df_bar['type1'] == df_bar['type2'], 'type-agg'] = df_bar['type1']
+    df_bar.loc[df_bar['type1'] != df_bar['type2'], 'type-agg'] = df_bar[['type1', 'type2']].transpose().agg(' + '.join)
+    df_bar.sort_values('id', ascending=False, inplace=True)
+
+    df_cat = df_filter.select_dtypes(exclude='object')
+    df_cat = df_cat.drop('id', axis=1)
+    df_stats = df_cat[['hp', 'att', 'def', 'spatt', 'spdef', 'spd']]
+    df_stats.rename(columns={'hp':'HP', 'att':'Atk', 'def':'Defense', 
+                            'spatt':'Sp.Attck', 'spdef':'Sp.Def', 'spd':'Speed'}, inplace=True)
+
+    df_table = df[['name', 'type1', 'type2','hp', 'att', 'def', 'spatt', 'spdef', 'spd']]
+
+    #---
+
+    fig_bar = go.Figure(data=[go.Bar(x=df_bar['type-agg'],
+                                 y=df_bar['id'])])
+
+    fig_box = go.Figure()
+    for column in df_stats.columns:
+        fig_box.add_trace(go.Box(y=df_stats[column], name=column))
+
+    fig_table = go.Figure(data=[go.Table(
+                            header=dict(values=list(df_table.columns),
+                                        fill_color='rgba(53, 170, 114, 0.95)',
                                         align='left'),
-                            cells=dict(values=df.transpose(),
+                            cells=dict(values=df_table.transpose(),
                                     align='left'))
                     ])
-    fig.update_layout(width=980, height=1900)
-    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
+    fig_bar.update_layout(width=680, height=550)
+    fig_box.update_layout(width=690, height=550)
+    fig_table.update_layout(width=890)
+
+    fig_bar.update_traces(marker_color='rgba(53, 170, 114, 0.95)')
+
+    data = [fig_bar, fig_box, fig_table]
+    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+    
     return graphJSON
 
 #------------
 if __name__ == '__main__':
     app.run(debug=True)
+
+
