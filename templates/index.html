@@ -2,18 +2,24 @@
 
 {% block content %}
 
- <!--   <h1>{% block title %} Pokeminhos {% endblock %}</h1> -->
+    <div class="column1">
+        <h1>
+            {% block title %} StatsDex {% endblock %}
+            <img src="/static/bobosoro.gif">
+        </h1>
 
-    <div class="bttn">
-        {% for type in types %}
-            <input class="btn btn-success" type="submit" value={{ type }} onclick="callback(value)">
-        {% endfor %}
-        <div id="table"></div>
+        <div class="bttn">
+            {% for type in types %}
+                <input class="btn btn-success" type="submit" value={{ type }} onclick="callback(value)">
+            {% endfor %}
+        </div>
+
+        <div id="barchart"></div>
     </div>
 
     <div class="graphs">
         <div id="boxplot"></div>
-        <div id="barchart"></div>
+        <div id="scatter"></div>
     </div>
 
 
@@ -21,7 +27,7 @@
         let data = {{ graphJSON | safe }};
         Plotly.newPlot('barchart', data[0]);
         Plotly.newPlot('boxplot', data[1]);
-        Plotly.newPlot('table', data[2]);
+        Plotly.newPlot('scatter', data[3]);
     </script>
 
 {% endblock %}

@@ -16,14 +16,14 @@
                 success: function(result) {
                     Plotly.newPlot('barchart', result[0]);
                     Plotly.newPlot('boxplot', result[1]);
-                    Plotly.newPlot('table', result[2]);
+                    Plotly.newPlot('scatter', result[3]);
                 }
             })
         }
     </script>
     <link rel="stylesheet" type="text/css" href="static/styles.css" />  
 
-    <title>{% block title %} {% endblock %}  :)</title>
+    <title>× {% block title %} {% endblock %} ×</title>
 </head>
 <body>
     <div class="container">
